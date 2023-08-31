@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             lblStatus = new Label();
             btnConnectQB = new Button();
@@ -37,6 +38,7 @@
             btnClose = new Button();
             btnDownload = new Button();
             cmbType = new ComboBox();
+            timer1 = new System.Windows.Forms.Timer(components);
             SuspendLayout();
             // 
             // lblStatus
@@ -70,6 +72,7 @@
             txtPath.ReadOnly = true;
             txtPath.Size = new Size(566, 41);
             txtPath.TabIndex = 2;
+            txtPath.TextChanged += txtPath_TextChanged;
             // 
             // btnCopyPath
             // 
@@ -129,6 +132,10 @@
             cmbType.Size = new Size(230, 23);
             cmbType.TabIndex = 15;
             // 
+            // timer1
+            // 
+            timer1.Tick += timer1_Tick;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -160,5 +167,6 @@
         private Button btnClose;
         private Button btnDownload;
         private ComboBox cmbType;
+        private System.Windows.Forms.Timer timer1;
     }
 }

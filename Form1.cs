@@ -11,6 +11,7 @@ namespace Enderun
         public Form1()
         {
             InitializeComponent();
+            timer1.Tick += timer1_Tick;
         }
 
         private void btnConnectQB_Click(object sender, EventArgs e)
@@ -22,6 +23,10 @@ namespace Enderun
         {
             this.Text = systemMessages?.GetSection("A1").Value;
             EnableAllControls(false);
+            ToolTip tooltip = new ToolTip();
+            tooltip.SetToolTip(btnExecute, "Execute the chosen report");
+            tooltip.SetToolTip(btnDownload, "Download the report");
+            tooltip.SetToolTip(btnCopyPath, "Copy to clipboard");
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -42,15 +47,21 @@ namespace Enderun
 
         private void btnExecute_Click(object sender, EventArgs e)
         {
+            if (cmbType.SelectedIndex < 0)
+            {
+                lblStatus.Text = systemMessages?.GetSection("A5").Value;
+                return;
+            }
+
             switch (cmbType.SelectedIndex)
             {
                 case 0:
                     JournalEntry journalEntry = new JournalEntry();
-                    journalEntry.DoAccountAdd();
+                    journalEntry.DoAccountAdd(lblStatus);
                     break;
                 default:
                     Bill bills = new Bill();
-                    bills.DoBillAdd();
+                    bills.DoBillAdd(lblStatus);
                     break;
             }
         }
@@ -92,8 +103,11 @@ namespace Enderun
 
         private void btnCopyPath_Click(object sender, EventArgs e)
         {
-            lblStatus.Text = systemMessages?.GetSection("A3").Value;
-            Clipboard.SetText(txtPath.Text);
+            if (!string.IsNullOrEmpty(txtPath.Text))
+            {
+                lblStatus.Text = systemMessages?.GetSection("A3").Value;
+                Clipboard.SetText(txtPath.Text);
+            }
         }
 
         public void ConnectToQuickbooks()
@@ -126,9 +140,8 @@ namespace Enderun
             }
             catch (Exception ex)
             {
-                lblStatus.Text = ex.Message.ToString();
+                lblStatus.Text = systemMessages?.GetSection("E3").Value;
                 Log.Error($"{systemMessages?.GetSection("E1").Value} : {ex.Message} : {ex.StackTrace}");
-                Log.Error(systemMessages?.GetSection("E2").Value);
                 if (sessionBegun)
                 {
                     sessionManager.EndSession();
@@ -137,7 +150,7 @@ namespace Enderun
             }
         }
 
-        public void EnableAllControls(bool isEnabled)
+        public void EnableAllControls(bool isEnabled = false)
         {
             cmbType.Enabled = isEnabled;
             btnCopyPath.Enabled = isEnabled;
@@ -145,6 +158,34 @@ namespace Enderun
             btnDownload.Enabled = isEnabled;
             btnCopyPath.Enabled = isEnabled;
             txtPath.Enabled = isEnabled;
+        }
+
+        private int countdownSeconds = 3;
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (countdownSeconds > 0)
+            {
+                countdownSeconds--;
+            }
+            else
+            {
+                timer1.Stop(); // Stop the timer when the countdown is finished
+                lblStatus.Text = string.Empty;
+            }
+        }
+
+        private void txtPath_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtPath.Text))
+            {
+                lblStatus.Text = systemMessages?.GetSection("A5").Value;
+                btnDownload.Enabled = false;
+                btnExecute.Enabled = false;
+                return;
+            }
+
+            btnDownload.Enabled = true;
+            btnExecute.Enabled = true;
         }
     }
 }

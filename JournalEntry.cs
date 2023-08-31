@@ -12,7 +12,7 @@ namespace Enderun
     public class JournalEntry
     {
         private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
-        public void DoAccountAdd()
+        public void DoAccountAdd(Label lblstatus)
         {
             try
             {
@@ -33,12 +33,12 @@ namespace Enderun
                 IResponse response = sessionManager.DoRequests(requestMsgSet).ResponseList.GetAt(0);
                 if (response.StatusCode != 0)
                 {
-                    MessageBox.Show(systemMessages?.GetSection("E3").Value, "Error");
+                    lblstatus.Text = systemMessages?.GetSection("E3").Value;
                     Log.Error($"{systemMessages?.GetSection("EJ-001").Value}{response.StatusMessage}");
                     return;
                 }
 
-                MessageBox.Show(systemMessages?.GetSection("EJ-003").Value);
+                lblstatus.Text = systemMessages?.GetSection("EJ-003").Value;
                 Log.Information($"{systemMessages?.GetSection("EJ-003").Value}");
 
 
@@ -49,7 +49,7 @@ namespace Enderun
             catch (Exception e)
             {
                 Log.Error($"{systemMessages?.GetSection("EJ-001").Value}{e.Message}");
-                MessageBox.Show(systemMessages?.GetSection("E3").Value, "Error");
+                lblstatus.Text = systemMessages?.GetSection("E3").Value;
             }
         }
 
@@ -65,7 +65,6 @@ namespace Enderun
             journal.RefNumber.SetValue($"{rand.Next(100)}");
             journal.IsAdjustment.SetValue(true);
             journal.ExternalGUID.SetValue(System.Guid.NewGuid().ToString("B"));
-            journal.Memo.SetValue("enderun app");
 
             IORJournalLine journalLineCredit = journal.ORJournalLineList.Append();
             journalLineCredit.JournalCreditLine.Amount.SetValue(randomAmount);

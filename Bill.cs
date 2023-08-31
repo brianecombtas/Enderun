@@ -13,7 +13,7 @@ namespace Enderun
         //Use at your most careful discretion
         private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
 
-        public void DoBillAdd()
+        public void DoBillAdd(Label lblstatus)
         {
             try
             {
@@ -34,13 +34,15 @@ namespace Enderun
                 IResponse response = sessionManager.DoRequests(requestMsgSet).ResponseList.GetAt(0);
                 if (response.StatusCode != 0)
                 {
-                    MessageBox.Show(systemMessages?.GetSection("E3").Value, "Error");
+                    //MessageBox.Show(systemMessages?.GetSection("E3").Value, "Error");
+                    lblstatus.Text = systemMessages?.GetSection("E3").Value;
                     Log.Error($"{systemMessages?.GetSection("EB-001").Value}{response.StatusMessage}");
                     return;
                 }
 
 
-                MessageBox.Show(systemMessages?.GetSection("EB-003").Value);
+                lblstatus.Text = systemMessages?.GetSection("EB-003").Value;
+                //MessageBox.Show(systemMessages?.GetSection("EB-003").Value);
                 Log.Information($"{systemMessages?.GetSection("EB-003").Value}");
 
                 //End the session and close the connection to QuickBooks
@@ -50,7 +52,8 @@ namespace Enderun
             catch (Exception e)
             {
                 Log.Information($"{systemMessages?.GetSection("EB-001").Value}{e.Message}");
-                MessageBox.Show(systemMessages?.GetSection("E3").Value, "Error");
+                //MessageBox.Show(systemMessages?.GetSection("E3").Value, "Error");
+                lblstatus.Text = systemMessages?.GetSection("E3").Value;
             }
         }
 

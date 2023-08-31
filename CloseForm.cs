@@ -29,7 +29,6 @@ namespace Enderun
         private void btnYes_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Yes;
-            Log.Information(systemMessages?.GetSection("E2").Value);
             this.Close();
         }
 
