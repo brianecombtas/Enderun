@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Microsoft.Extensions.Configuration;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,6 +15,7 @@ namespace Enderun
 {
     public partial class CloseForm : Form
     {
+        private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
         public CloseForm()
         {
             InitializeComponent();
@@ -26,9 +28,8 @@ namespace Enderun
 
         private void btnYes_Click(object sender, EventArgs e)
         {
-            var systemMessages = Program.Configuration.GetSection("SystemMessages");
             this.DialogResult = DialogResult.Yes;
-            Log.Information(systemMessages.GetSection("E2").Value);
+            Log.Information(systemMessages?.GetSection("E2").Value);
             this.Close();
         }
 
