@@ -12,8 +12,9 @@ namespace Enderun
         //This code is NOT intended to show best practices or ideal code
         //Use at your most careful discretion
         private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
+        private IConfigurationSection? chartOfAccounts = Program.Configuration.GetSection("SystemMessages:ChartOfAccounts");
 
-        public void DoBillAdd(Label lblstatus)
+        public void DoBillAdd()
         {
             try
             {
@@ -25,7 +26,7 @@ namespace Enderun
                 requestMsgSet.Attributes.OnError = ENRqOnError.roeContinue;
 
                 MapBillAddRq(requestMsgSet);
-
+                 
                 //Connect to QuickBooks and begin a session
                 sessionManager.OpenConnection("", systemMessages?.GetSection("EB-002").Value);
                 sessionManager.BeginSession("", ENOpenMode.omDontCare);
@@ -34,15 +35,12 @@ namespace Enderun
                 IResponse response = sessionManager.DoRequests(requestMsgSet).ResponseList.GetAt(0);
                 if (response.StatusCode != 0)
                 {
-                    //MessageBox.Show(systemMessages?.GetSection("E3").Value, "Error");
-                    lblstatus.Text = systemMessages?.GetSection("E3").Value;
+                    MessageBox.Show(systemMessages?.GetSection("E3").Value);
                     Log.Error($"{systemMessages?.GetSection("EB-001").Value}{response.StatusMessage}");
                     return;
                 }
 
-
-                lblstatus.Text = systemMessages?.GetSection("EB-003").Value;
-                //MessageBox.Show(systemMessages?.GetSection("EB-003").Value);
+                MessageBox.Show(systemMessages?.GetSection("EB-003").Value);
                 Log.Information($"{systemMessages?.GetSection("EB-003").Value}");
 
                 //End the session and close the connection to QuickBooks
@@ -51,36 +49,36 @@ namespace Enderun
             }
             catch (Exception e)
             {
-                Log.Information($"{systemMessages?.GetSection("EB-001").Value}{e.Message}");
-                //MessageBox.Show(systemMessages?.GetSection("E3").Value, "Error");
-                lblstatus.Text = systemMessages?.GetSection("E3").Value;
+                Log.Information($"{systemMessages?.GetSection("EB-001").Value}{e.Message}{e.StackTrace}");
+                MessageBox.Show(systemMessages?.GetSection("E3").Value);
             }
         }
 
-
+        public string[] vendor = { "BABY FIRST", "FLOWER BOY", "MARCAYDA BAKERY", "ALFAMART BUCAL", "MARVINS ROOM" };
         void MapBillAddRq(IMsgSetRequest requestMsgSet)
         {
             Random rand = new Random();
             var randomAmount = Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2);
 
+            //// HEADER
             IBillAdd add = requestMsgSet.AppendBillAddRq();
             add.ExternalGUID.SetValue(System.Guid.NewGuid().ToString("B"));
-            add.VendorRef.FullName.SetValue("BABY FIRST");
+            add.VendorRef.FullName.SetValue(vendor[rand.Next(5)]);
             add.TxnDate.SetValue(DateTime.Today);
             add.DueDate.SetValue(DateTime.Today.AddMonths(4));
-            add.Memo.SetValue("TESTING");
+            add.Memo.SetValue($"TESTING_NO_{rand.Next(100)}");
 
             ////       EXPENSE LINE
             IExpenseLineAdd line = add.ExpenseLineAddList.Append();
-            line.AccountRef.FullName.SetValue("Sales - Software");
-            line.Amount.SetValue(randomAmount);
+            line.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value);
+            line.Amount.SetValue(Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2));
             line.ClassRef.FullName.SetValue("TestClass1");
 
             ////       ITEM LINE
             IORItemLineAdd item = add.ORItemLineAddList.Append();
             item.ItemLineAdd.ItemRef.FullName.SetValue("0002");
             item.ItemLineAdd.TaxAmount.SetValue(rand.Next(10));
-            item.ItemLineAdd.Cost.SetValue(randomAmount);
+            item.ItemLineAdd.Cost.SetValue(Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2));
         }
 
 

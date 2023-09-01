@@ -28,9 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-            lblStatus = new Label();
             btnConnectQB = new Button();
             txtPath = new TextBox();
             btnCopyPath = new Button();
@@ -38,18 +36,9 @@
             btnClose = new Button();
             btnDownload = new Button();
             cmbType = new ComboBox();
-            timer1 = new System.Windows.Forms.Timer(components);
+            pictureBox1 = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
-            // 
-            // lblStatus
-            // 
-            lblStatus.AutoSize = true;
-            lblStatus.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
-            lblStatus.Location = new Point(12, 15);
-            lblStatus.Name = "lblStatus";
-            lblStatus.Size = new Size(79, 21);
-            lblStatus.TabIndex = 0;
-            lblStatus.Text = "Welcome!";
             // 
             // btnConnectQB
             // 
@@ -119,6 +108,7 @@
             btnDownload.Size = new Size(42, 41);
             btnDownload.TabIndex = 13;
             btnDownload.UseVisualStyleBackColor = true;
+            btnDownload.Click += btnDownload_Click;
             // 
             // cmbType
             // 
@@ -132,15 +122,22 @@
             cmbType.Size = new Size(230, 23);
             cmbType.TabIndex = 15;
             // 
-            // timer1
+            // pictureBox1
             // 
-            timer1.Tick += timer1_Tick;
+            pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
+            pictureBox1.Location = new Point(12, 12);
+            pictureBox1.Name = "pictureBox1";
+            pictureBox1.Size = new Size(155, 44);
+            pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureBox1.TabIndex = 16;
+            pictureBox1.TabStop = false;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(688, 207);
+            Controls.Add(pictureBox1);
             Controls.Add(cmbType);
             Controls.Add(btnDownload);
             Controls.Add(btnClose);
@@ -148,18 +145,16 @@
             Controls.Add(btnCopyPath);
             Controls.Add(txtPath);
             Controls.Add(btnConnectQB);
-            Controls.Add(lblStatus);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Load += Form1_Load;
+            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private Label lblStatus;
         private Button btnConnectQB;
         private TextBox txtPath;
         private Button btnCopyPath;
@@ -167,6 +162,6 @@
         private Button btnClose;
         private Button btnDownload;
         private ComboBox cmbType;
-        private System.Windows.Forms.Timer timer1;
+        private PictureBox pictureBox1;
     }
 }

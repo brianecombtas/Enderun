@@ -15,17 +15,10 @@ namespace Enderun
 {
     public partial class CloseForm : Form
     {
-        private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
         public CloseForm()
         {
             InitializeComponent();
         }
-
-        private void CloseForm_Load(object sender, EventArgs e)
-        {
- 
-        }
-
         private void btnYes_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Yes;

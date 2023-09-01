@@ -11,7 +11,6 @@ namespace Enderun
         public Form1()
         {
             InitializeComponent();
-            timer1.Tick += timer1_Tick;
         }
 
         private void btnConnectQB_Click(object sender, EventArgs e)
@@ -27,6 +26,7 @@ namespace Enderun
             tooltip.SetToolTip(btnExecute, "Execute the chosen report");
             tooltip.SetToolTip(btnDownload, "Download the report");
             tooltip.SetToolTip(btnCopyPath, "Copy to clipboard");
+            btnCopyPath.Enabled = false;
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -49,7 +49,7 @@ namespace Enderun
         {
             if (cmbType.SelectedIndex < 0)
             {
-                lblStatus.Text = systemMessages?.GetSection("A5").Value;
+                MessageBox.Show(systemMessages?.GetSection("A5").Value);
                 return;
             }
 
@@ -57,16 +57,16 @@ namespace Enderun
             {
                 case 0:
                     JournalEntry journalEntry = new JournalEntry();
-                    journalEntry.DoAccountAdd(lblStatus);
+                    journalEntry.DoAccountAdd();
                     break;
                 default:
                     Bill bills = new Bill();
-                    bills.DoBillAdd(lblStatus);
+                    bills.DoBillAdd();
                     break;
             }
         }
 
-        #region "testing"
+        #region "API testing"
         ////try
         ////{
         ////    var systemMessages? = Program.Configuration.GetSection("SystemMessages");
@@ -105,14 +105,13 @@ namespace Enderun
         {
             if (!string.IsNullOrEmpty(txtPath.Text))
             {
-                lblStatus.Text = systemMessages?.GetSection("A3").Value;
+                MessageBox.Show(systemMessages?.GetSection("A3").Value);
                 Clipboard.SetText(txtPath.Text);
             }
         }
 
         public void ConnectToQuickbooks()
         {
-            lblStatus.Text = systemMessages?.GetSection("A4").Value;
             bool sessionBegun = false;
             QBSessionManager sessionManager = new QBSessionManager();
 
@@ -125,12 +124,11 @@ namespace Enderun
                 sessionManager.BeginSession("", ENOpenMode.omDontCare);
                 sessionBegun = true;
 
-
                 if (sessionBegun)
                 {
                     EnableAllControls(true);
                     Log.Information(systemMessages?.GetSection("A2").Value);
-                    lblStatus.Text = systemMessages?.GetSection("A2").Value;
+                    MessageBox.Show(systemMessages?.GetSection("A2").Value);
                 }
 
                 //End the session and close the connection to QuickBooks
@@ -140,7 +138,7 @@ namespace Enderun
             }
             catch (Exception ex)
             {
-                lblStatus.Text = systemMessages?.GetSection("E3").Value;
+                MessageBox.Show(systemMessages?.GetSection("E3").Value);
                 Log.Error($"{systemMessages?.GetSection("E1").Value} : {ex.Message} : {ex.StackTrace}");
                 if (sessionBegun)
                 {
@@ -156,36 +154,24 @@ namespace Enderun
             btnCopyPath.Enabled = isEnabled;
             btnExecute.Enabled = isEnabled;
             btnDownload.Enabled = isEnabled;
-            btnCopyPath.Enabled = isEnabled;
             txtPath.Enabled = isEnabled;
         }
 
-        private int countdownSeconds = 3;
-        private void timer1_Tick(object sender, EventArgs e)
+        private void btnDownload_Click(object sender, EventArgs e)
         {
-            if (countdownSeconds > 0)
-            {
-                countdownSeconds--;
-            }
-            else
-            {
-                timer1.Stop(); // Stop the timer when the countdown is finished
-                lblStatus.Text = string.Empty;
-            }
+            if (string.IsNullOrEmpty(txtPath.Text) && cmbType.SelectedIndex == -1)
+                MessageBox.Show(systemMessages?.GetSection("A5").Value);
+
+            return;
         }
 
         private void txtPath_TextChanged(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtPath.Text))
+            if (string.IsNullOrEmpty(this.Text))
             {
-                lblStatus.Text = systemMessages?.GetSection("A5").Value;
-                btnDownload.Enabled = false;
-                btnExecute.Enabled = false;
+                btnCopyPath.Enabled = true;
                 return;
             }
-
-            btnDownload.Enabled = true;
-            btnExecute.Enabled = true;
         }
     }
 }

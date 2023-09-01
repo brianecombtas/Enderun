@@ -73,7 +73,6 @@
             Name = "CloseForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Combtas x Enderun";
-            Load += CloseForm_Load;
             ResumeLayout(false);
             PerformLayout();
         }
