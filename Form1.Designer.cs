@@ -37,15 +37,17 @@
             btnDownload = new Button();
             cmbType = new ComboBox();
             pictureBox1 = new PictureBox();
+            btnLogs = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
             // 
             // btnConnectQB
             // 
             btnConnectQB.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnConnectQB.Location = new Point(501, 12);
+            btnConnectQB.Location = new Point(573, 16);
+            btnConnectQB.Margin = new Padding(3, 4, 3, 4);
             btnConnectQB.Name = "btnConnectQB";
-            btnConnectQB.Size = new Size(175, 30);
+            btnConnectQB.Size = new Size(200, 40);
             btnConnectQB.TabIndex = 1;
             btnConnectQB.Text = "Connect to QuickBooks";
             btnConnectQB.UseVisualStyleBackColor = true;
@@ -54,12 +56,11 @@
             // txtPath
             // 
             txtPath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            txtPath.Location = new Point(12, 101);
-            txtPath.Margin = new Padding(3, 2, 3, 2);
+            txtPath.Location = new Point(14, 135);
             txtPath.Multiline = true;
             txtPath.Name = "txtPath";
             txtPath.ReadOnly = true;
-            txtPath.Size = new Size(566, 41);
+            txtPath.Size = new Size(646, 53);
             txtPath.TabIndex = 2;
             txtPath.TextChanged += txtPath_TextChanged;
             // 
@@ -68,9 +69,10 @@
             btnCopyPath.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnCopyPath.BackgroundImage = (Image)resources.GetObject("btnCopyPath.BackgroundImage");
             btnCopyPath.BackgroundImageLayout = ImageLayout.Stretch;
-            btnCopyPath.Location = new Point(555, 100);
+            btnCopyPath.Location = new Point(634, 133);
+            btnCopyPath.Margin = new Padding(3, 4, 3, 4);
             btnCopyPath.Name = "btnCopyPath";
-            btnCopyPath.Size = new Size(23, 23);
+            btnCopyPath.Size = new Size(26, 31);
             btnCopyPath.TabIndex = 8;
             btnCopyPath.UseVisualStyleBackColor = true;
             btnCopyPath.Click += btnCopyPath_Click;
@@ -80,9 +82,10 @@
             btnExecute.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnExecute.BackgroundImage = (Image)resources.GetObject("btnExecute.BackgroundImage");
             btnExecute.BackgroundImageLayout = ImageLayout.Zoom;
-            btnExecute.Location = new Point(584, 101);
+            btnExecute.Location = new Point(667, 135);
+            btnExecute.Margin = new Padding(3, 4, 3, 4);
             btnExecute.Name = "btnExecute";
-            btnExecute.Size = new Size(42, 41);
+            btnExecute.Size = new Size(48, 55);
             btnExecute.TabIndex = 9;
             btnExecute.UseVisualStyleBackColor = true;
             btnExecute.Click += btnExecute_Click;
@@ -90,9 +93,10 @@
             // btnClose
             // 
             btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnClose.Location = new Point(563, 170);
+            btnClose.Location = new Point(643, 227);
+            btnClose.Margin = new Padding(3, 4, 3, 4);
             btnClose.Name = "btnClose";
-            btnClose.Size = new Size(111, 30);
+            btnClose.Size = new Size(127, 40);
             btnClose.TabIndex = 12;
             btnClose.Text = "Close";
             btnClose.UseVisualStyleBackColor = true;
@@ -103,9 +107,10 @@
             btnDownload.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btnDownload.BackgroundImage = (Image)resources.GetObject("btnDownload.BackgroundImage");
             btnDownload.BackgroundImageLayout = ImageLayout.Zoom;
-            btnDownload.Location = new Point(632, 101);
+            btnDownload.Location = new Point(722, 135);
+            btnDownload.Margin = new Padding(3, 4, 3, 4);
             btnDownload.Name = "btnDownload";
-            btnDownload.Size = new Size(42, 41);
+            btnDownload.Size = new Size(48, 55);
             btnDownload.TabIndex = 13;
             btnDownload.UseVisualStyleBackColor = true;
             btnDownload.Click += btnDownload_Click;
@@ -116,27 +121,42 @@
             cmbType.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbType.FormattingEnabled = true;
             cmbType.Items.AddRange(new object[] { "Journal Entries", "Bills" });
-            cmbType.Location = new Point(12, 73);
+            cmbType.Location = new Point(14, 97);
+            cmbType.Margin = new Padding(3, 4, 3, 4);
             cmbType.MaxDropDownItems = 5;
             cmbType.Name = "cmbType";
-            cmbType.Size = new Size(230, 23);
+            cmbType.Size = new Size(262, 28);
             cmbType.TabIndex = 15;
             // 
             // pictureBox1
             // 
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(12, 12);
+            pictureBox1.Location = new Point(14, 16);
+            pictureBox1.Margin = new Padding(3, 4, 3, 4);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(155, 44);
+            pictureBox1.Size = new Size(177, 59);
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
             pictureBox1.TabIndex = 16;
             pictureBox1.TabStop = false;
             // 
+            // btnLogs
+            // 
+            btnLogs.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnLogs.Location = new Point(510, 227);
+            btnLogs.Margin = new Padding(3, 4, 3, 4);
+            btnLogs.Name = "btnLogs";
+            btnLogs.Size = new Size(127, 40);
+            btnLogs.TabIndex = 17;
+            btnLogs.Text = "System Logs";
+            btnLogs.UseVisualStyleBackColor = true;
+            btnLogs.Click += btnLogs_Click;
+            // 
             // Form1
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(688, 207);
+            ClientSize = new Size(786, 276);
+            Controls.Add(btnLogs);
             Controls.Add(pictureBox1);
             Controls.Add(cmbType);
             Controls.Add(btnDownload);
@@ -146,6 +166,7 @@
             Controls.Add(txtPath);
             Controls.Add(btnConnectQB);
             FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            Margin = new Padding(3, 4, 3, 4);
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
             Load += Form1_Load;
@@ -163,5 +184,6 @@
         private Button btnDownload;
         private ComboBox cmbType;
         private PictureBox pictureBox1;
+        private Button btnLogs;
     }
 }

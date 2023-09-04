@@ -1,6 +1,7 @@
 using Interop.QBFC16;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using System.Diagnostics;
 
 namespace Enderun
 {
@@ -155,6 +156,7 @@ namespace Enderun
             btnExecute.Enabled = isEnabled;
             btnDownload.Enabled = isEnabled;
             txtPath.Enabled = isEnabled;
+            btnLogs.Enabled = isEnabled;
         }
 
         private void btnDownload_Click(object sender, EventArgs e)
@@ -170,6 +172,51 @@ namespace Enderun
             if (string.IsNullOrEmpty(this.Text))
             {
                 btnCopyPath.Enabled = true;
+                return;
+            }
+        }
+
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void btnLogs_Click(object sender, EventArgs e)
+        {
+            Log.Information(systemMessages?.GetSection("A7").Value);
+            var filePath = $"{Program.Configuration.GetSection("LogFolder").Value}\\{DateTime.Now.ToString("MM-dd-yyyy")}.log";
+            try
+            {
+                if (!File.Exists(filePath))
+                {
+                    MessageBox.Show(systemMessages?.GetSection("E4").Value);
+                    Log.Error($"{systemMessages?.GetSection("E4").Value}");
+                    return;
+                }
+
+                // Check if the file is already open by another process
+                Process[] processes = Process.GetProcessesByName(Path.GetFileNameWithoutExtension(filePath));
+                foreach (var process in processes)
+                {
+                    try
+                    {
+                        process.Kill(); // Kill the process if it's using the file
+                    }
+                    catch (Exception err)
+                    {
+                        Log.Error($"Error killing process:  {err.Message} : {err.StackTrace}");
+                    }
+                }
+
+                // Open the file with the default associated program
+                Log.Information(systemMessages?.GetSection("A7").Value);
+                Process.Start("notepad.exe", filePath);
+            }
+            catch (Exception err)
+            {
+                Log.Error($"{err.Message} : {err.StackTrace}");
                 return;
             }
         }
