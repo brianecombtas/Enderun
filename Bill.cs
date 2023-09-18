@@ -63,22 +63,22 @@ namespace Enderun
             //// HEADER
             IBillAdd add = requestMsgSet.AppendBillAddRq();
             add.ExternalGUID.SetValue(System.Guid.NewGuid().ToString("B"));
-            add.VendorRef.FullName.SetValue(vendor[rand.Next(5)]);
-            add.TxnDate.SetValue(DateTime.Today);
-            add.DueDate.SetValue(DateTime.Today.AddMonths(4));
-            add.Memo.SetValue($"TESTING_NO_{rand.Next(100)}");
+            add.VendorRef.FullName.SetValue(vendor[rand.Next(5)]);  /// -------------- ACCOUNT CODE?
+            add.TxnDate.SetValue(DateTime.Today);  /// ------------------------------- TRANSACTION DATE
+            add.DueDate.SetValue(DateTime.Today.AddMonths(4)); // -------------------- DUE DATE
+            add.Memo.SetValue($"TESTING_NO_{rand.Next(100)}"); // -------------------- MEMO (WE THINK THESE ARE REMARKS)
 
             ////       EXPENSE LINE
             IExpenseLineAdd line = add.ExpenseLineAddList.Append();
-            line.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value);
-            line.Amount.SetValue(Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2));
-            line.ClassRef.FullName.SetValue("TestClass1");
+            line.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value); // ------------ CHART OF ACCOUNTS
+            line.Amount.SetValue(Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2)); // --------------------- AMOUNT
+            line.ClassRef.FullName.SetValue("TestClass1"); // ------------------------------------------------------- CLASS TYPE (SETUP IN QUICKBOOKS)
 
             ////       ITEM LINE
             IORItemLineAdd item = add.ORItemLineAddList.Append();
-            item.ItemLineAdd.ItemRef.FullName.SetValue("0002");
-            item.ItemLineAdd.TaxAmount.SetValue(rand.Next(10));
-            item.ItemLineAdd.Cost.SetValue(Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2));
+            item.ItemLineAdd.ItemRef.FullName.SetValue("0002"); // ------------------------------------------ ITEM TYPE (SETUP IN QUICKBOOKS)
+            item.ItemLineAdd.TaxAmount.SetValue(rand.Next(10)); // ------------------------------------------ TAX AMOUNT
+            item.ItemLineAdd.Cost.SetValue(Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2)); // --- AMOUNT/COST
         }
 
 

@@ -62,22 +62,22 @@ namespace Enderun
 
             //// HEADER
             IJournalEntryAdd journal = requestMsgSet.AppendJournalEntryAddRq();
-            journal.TxnDate.SetValue(DateTime.Today.AddMonths(-4));
-            journal.RefNumber.SetValue($"{rand.Next(100)}");
-            journal.IsAdjustment.SetValue(true);
-            journal.ExternalGUID.SetValue(System.Guid.NewGuid().ToString("B"));
-            journal.Memo.SetValue($"TESTING_NO_{rand.Next(100)}");
+            journal.TxnDate.SetValue(DateTime.Today.AddMonths(-4)); // -------------------- TRANSACTION DATE
+            journal.RefNumber.SetValue($"{rand.Next(100)}"); // --------------------------- REFERENCE NUMBER
+            journal.IsAdjustment.SetValue(true); // --------------------------------------- IS ADJUSTMENT (TRUE/FALSE)
+            journal.ExternalGUID.SetValue(System.Guid.NewGuid().ToString("B")); // -------- ID (WE THINK THIS IS ONLY A UNIQUE ID FOR THE REQUEST)
+            //journal.Memo.SetValue($"TESTING_NO_{rand.Next(100)}");
 
 
             //// DEBIT LINE
-            IORJournalLine journalLineDebit = journal.ORJournalLineList.Append();
-            journalLineDebit.JournalDebitLine.Amount.SetValue(randomAmount);
-            journalLineDebit.JournalDebitLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value);
+            IORJournalLine journalLineDebit = journal.ORJournalLineList.Append(); 
+            journalLineDebit.JournalDebitLine.Amount.SetValue(randomAmount);  // ----------------------------------------------------- AMOUNT
+            journalLineDebit.JournalDebitLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value); //- CHART OF ACCOUNTS (SETUP IN QUICKBOOKS)
 
             //// CREDIT LINE
             IORJournalLine journalLineCredit = journal.ORJournalLineList.Append();
-            journalLineCredit.JournalCreditLine.Amount.SetValue(randomAmount);
-            journalLineCredit.JournalCreditLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value);
+            journalLineCredit.JournalCreditLine.Amount.SetValue(randomAmount); // ----------------------------------------------------- AMOUNT
+            journalLineCredit.JournalCreditLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value);//- CHART OF ACCOUNTS (SETUP IN QUICKBOOKS)
 
             journal.IncludeRetElementList.Add("ab");
         }
