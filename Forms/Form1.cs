@@ -1,3 +1,4 @@
+using Enderun.Logic;
 using Interop.QBFC16;
 using Microsoft.Extensions.Configuration;
 using Serilog;

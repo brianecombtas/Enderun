@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Serilog;
 
-namespace Enderun
+namespace Enderun.Logic
 {
     public class Bill
     {
@@ -26,7 +26,7 @@ namespace Enderun
                 requestMsgSet.Attributes.OnError = ENRqOnError.roeContinue;
 
                 MapBillAddRq(requestMsgSet);
-                 
+
                 //Connect to QuickBooks and begin a session
                 sessionManager.OpenConnection("", systemMessages?.GetSection("EB-002").Value);
                 sessionManager.BeginSession("", ENOpenMode.omDontCare);
@@ -62,7 +62,7 @@ namespace Enderun
 
             //// HEADER
             IBillAdd add = requestMsgSet.AppendBillAddRq();
-            add.ExternalGUID.SetValue(System.Guid.NewGuid().ToString("B"));
+            add.ExternalGUID.SetValue(Guid.NewGuid().ToString("B"));
             add.VendorRef.FullName.SetValue(vendor[rand.Next(5)]);  /// -------------- ACCOUNT CODE?
             add.TxnDate.SetValue(DateTime.Today);  /// ------------------------------- TRANSACTION DATE
             add.DueDate.SetValue(DateTime.Today.AddMonths(4)); // -------------------- DUE DATE
