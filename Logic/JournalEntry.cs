@@ -12,7 +12,7 @@ namespace Enderun
     public class JournalEntry
     {
         private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
-        private IConfigurationSection? chartOfAccounts = Program.Configuration.GetSection("SystemMessages:ChartOfAccounts");
+        private IConfigurationSection? chartOfAccounts = Program.Configuration.GetSection("ChartOfAccounts");
         public void DoAccountAdd()
         {
             try
@@ -34,6 +34,7 @@ namespace Enderun
                 IResponse response = sessionManager.DoRequests(requestMsgSet).ResponseList.GetAt(0);
                 if (response.StatusCode != 0)
                 {
+                    var asdasd = systemMessages?.GetSection("E3").Value;
                     MessageBox.Show(systemMessages?.GetSection("E3").Value);
                     Log.Error($"{systemMessages?.GetSection("EJ-001").Value}{response.StatusMessage}");
                     return;
@@ -54,6 +55,7 @@ namespace Enderun
             }
         }
 
+        public string[] vendor = { "BABY FIRST", "FLOWER BOY", "MARCAYDA BAKERY", "ALFAMART BUCAL", "MARVINS ROOM" };
 
         void MapJournalAddRq(IMsgSetRequest requestMsgSet)
         {
@@ -66,18 +68,24 @@ namespace Enderun
             journal.RefNumber.SetValue($"{rand.Next(100)}"); // --------------------------- REFERENCE NUMBER
             journal.IsAdjustment.SetValue(true); // --------------------------------------- IS ADJUSTMENT (TRUE/FALSE)
             journal.ExternalGUID.SetValue(System.Guid.NewGuid().ToString("B")); // -------- ID (WE THINK THIS IS ONLY A UNIQUE ID FOR THE REQUEST)
-            //journal.Memo.SetValue($"TESTING_NO_{rand.Next(100)}");
-
 
             //// DEBIT LINE
+            ///
+            var asdasd = chartOfAccounts?.GetSection($"{rand.Next(40)}").Value;
             IORJournalLine journalLineDebit = journal.ORJournalLineList.Append(); 
             journalLineDebit.JournalDebitLine.Amount.SetValue(randomAmount);  // ----------------------------------------------------- AMOUNT
             journalLineDebit.JournalDebitLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value); //- CHART OF ACCOUNTS (SETUP IN QUICKBOOKS)
+            journalLineDebit.JournalDebitLine.EntityRef.FullName.SetValue(vendor[rand.Next(5)]);
+            journalLineDebit.JournalDebitLine.ClassRef.FullName.SetValue("TestClass1");
+            journalLineDebit.JournalDebitLine.Memo.SetValue($"TESTING_NO_{rand.Next(100)}");  
 
             //// CREDIT LINE
             IORJournalLine journalLineCredit = journal.ORJournalLineList.Append();
             journalLineCredit.JournalCreditLine.Amount.SetValue(randomAmount); // ----------------------------------------------------- AMOUNT
-            journalLineCredit.JournalCreditLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value);//- CHART OF ACCOUNTS (SETUP IN QUICKBOOKS)
+            journalLineCredit.JournalCreditLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection("6").Value);//- ACCOUNTS PAYABLE
+            journalLineCredit.JournalCreditLine.EntityRef.FullName.SetValue(vendor[rand.Next(5)]);
+            journalLineCredit.JournalCreditLine.ClassRef.FullName.SetValue("TestClass1");
+            journalLineCredit.JournalCreditLine.Memo.SetValue($"TESTING_NO_{rand.Next(100)}");
 
             journal.IncludeRetElementList.Add("ab");
         }

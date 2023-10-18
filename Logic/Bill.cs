@@ -12,7 +12,7 @@ namespace Enderun.Logic
         //This code is NOT intended to show best practices or ideal code
         //Use at your most careful discretion
         private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
-        private IConfigurationSection? chartOfAccounts = Program.Configuration.GetSection("SystemMessages:ChartOfAccounts");
+        private IConfigurationSection? chartOfAccounts = Program.Configuration.GetSection("ChartOfAccounts");
 
         public void DoBillAdd()
         {
@@ -35,6 +35,7 @@ namespace Enderun.Logic
                 IResponse response = sessionManager.DoRequests(requestMsgSet).ResponseList.GetAt(0);
                 if (response.StatusCode != 0)
                 {
+                    var asdasd = systemMessages?.GetSection("E3").Value;
                     MessageBox.Show(systemMessages?.GetSection("E3").Value);
                     Log.Error($"{systemMessages?.GetSection("EB-001").Value}{response.StatusMessage}");
                     return;

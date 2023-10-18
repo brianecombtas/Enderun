@@ -1,8 +1,13 @@
 using Enderun.Logic;
 using Interop.QBFC16;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Serilog;
+using System.Configuration;
 using System.Diagnostics;
+using System.Net.Http.Headers;
+using System.Text;
+using static Enderun.Models.InterfaceAPIModels;
 
 namespace Enderun
 {
@@ -10,6 +15,9 @@ namespace Enderun
     {
         public bool isClose = false;
         private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
+        private IConfigurationSection? apiConfig = Program.Configuration.GetSection("ApiConfig");
+        private JournalEntry journalEntry = new();
+        private Bill bills = new();
         public Form1()
         {
             InitializeComponent();
@@ -58,15 +66,16 @@ namespace Enderun
             switch (cmbType.SelectedIndex)
             {
                 case 0:
-                    JournalEntry journalEntry = new JournalEntry();
                     journalEntry.DoAccountAdd();
                     break;
                 default:
-                    Bill bills = new Bill();
                     bills.DoBillAdd();
                     break;
             }
         }
+
+
+
 
         #region "API testing"
         ////try
@@ -101,6 +110,49 @@ namespace Enderun
         ////    Log.Error($"API request failed: {ex.Message}");
         ////}
         ////break;
+        ///////////////////////////////////////////////////////////////////////////////////////
+        //////string jsonContent = File.ReadAllText("C:\\Users\\ComBtas\\Desktop\\Projects\\QuickBooks\\Enderun\\Enderun\\interfaceApi.json");
+        //////// Deserialize JSON into your C# class
+        //////AcctHeader apiResponse = JsonConvert.DeserializeObject<AcctHeader>(jsonContent);
+
+        //var apParams = new APParams
+        //{
+        //    InvoiceAPNo = 0,
+        //    CompUnitType = 1,
+        //    CompUnitID = 1,
+        //    Account = 1,
+        //    CompanyID = 1,
+        //    SupplierCode = "string",
+        //    InvoiceSubType = "ALL",
+        //    InvoiceNumber = "2",
+        //    WorkerCode = "",
+        //    DocDate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd")),
+        //    InvoiceFromDate = DateTime.Now,
+        //    InvoiceToDate = DateTime.Now
+        //};
+
+        //using (var httpClient = new HttpClient())
+        //{
+        //    httpClient.Timeout = TimeSpan.FromMinutes(int.Parse(apiConfig.GetSection("Timeout").Value));
+        //    var credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{apiConfig.GetSection("Username").Value}:{apiConfig.GetSection("Password").Value}"));
+        //    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
+
+        //    var jsonPayload = JsonConvert.SerializeObject(apParams);
+        //    var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+        //    httpClient.DefaultRequestHeaders.Add(apiConfig.GetSection("Key").Value, apiConfig.GetSection("Value").Value);
+        //    var response = await httpClient.PostAsync(apiConfig.GetSection("Url").Value, content);
+
+        //    string responseBody = await response.Content.ReadAsStringAsync();
+        //    if (response.StatusCode.ToString() == "OK")
+        //    {
+        //        txtPath.Text = responseBody;
+        //        Log.Information($"API request successful: {responseBody}");
+        //    }
+        //    else
+        //    {
+        //        txtPath.Text = responseBody;
+        //        Log.Error($"API request failed: {responseBody}");
+        //    }
         #endregion
 
         private void btnCopyPath_Click(object sender, EventArgs e)
@@ -157,7 +209,6 @@ namespace Enderun
             btnExecute.Enabled = isEnabled;
             btnDownload.Enabled = isEnabled;
             txtPath.Enabled = isEnabled;
-            btnLogs.Enabled = isEnabled;
         }
 
         private void btnDownload_Click(object sender, EventArgs e)
