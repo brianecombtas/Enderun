@@ -14,7 +14,7 @@ namespace Enderun.Logic
         private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
         private IConfigurationSection? chartOfAccounts = Program.Configuration.GetSection("ChartOfAccounts");
 
-        public void DoBillAdd()
+        public void DoBillAdd(string region)
         {
             try
             {
@@ -22,15 +22,15 @@ namespace Enderun.Logic
                 QBSessionManager? sessionManager = new QBSessionManager();
 
                 //Create the message set request object to hold our request
-                IMsgSetRequest requestMsgSet = sessionManager.CreateMsgSetRequest("US", 16, 0);
+                IMsgSetRequest requestMsgSet = sessionManager.CreateMsgSetRequest(region, 16, 0);
                 requestMsgSet.Attributes.OnError = ENRqOnError.roeContinue;
-
-                MapBillAddRq(requestMsgSet);
 
                 //Connect to QuickBooks and begin a session
                 sessionManager.OpenConnection("", systemMessages?.GetSection("EB-002").Value);
                 sessionManager.BeginSession("", ENOpenMode.omDontCare);
 
+                MapBillAddRq(requestMsgSet, region);
+                
                 //Send the request and get the response from QuickBooks
                 IResponse response = sessionManager.DoRequests(requestMsgSet).ResponseList.GetAt(0);
                 if (response.StatusCode != 0)
@@ -56,7 +56,7 @@ namespace Enderun.Logic
         }
 
         public string[] vendor = { "BABY FIRST", "FLOWER BOY", "MARCAYDA BAKERY", "ALFAMART BUCAL", "MARVINS ROOM" };
-        void MapBillAddRq(IMsgSetRequest requestMsgSet)
+        void MapBillAddRq(IMsgSetRequest requestMsgSet, string region)
         {
             Random rand = new Random();
             var randomAmount = Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2);
@@ -73,15 +73,15 @@ namespace Enderun.Logic
             IExpenseLineAdd line = add.ExpenseLineAddList.Append();
             line.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value); // ------------ CHART OF ACCOUNTS
             line.Amount.SetValue(Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2)); // --------------------- AMOUNT
-            line.ClassRef.FullName.SetValue("TestClass1"); // ------------------------------------------------------- CLASS TYPE (SETUP IN QUICKBOOKS)
+
+            if (region.Equals("US"))
+                line.ClassRef.FullName.SetValue("TestClass1"); // ------------------------------------------------------- CLASS TYPE (SETUP IN QUICKBOOKS)
 
             ////       ITEM LINE
             IORItemLineAdd item = add.ORItemLineAddList.Append();
-            item.ItemLineAdd.ItemRef.FullName.SetValue("0002"); // ------------------------------------------ ITEM TYPE (SETUP IN QUICKBOOKS)
+            item.ItemLineAdd.ItemRef.FullName.SetValue("Cement"); // ------------------------------------------ ITEM TYPE (SETUP IN QUICKBOOKS)
             item.ItemLineAdd.TaxAmount.SetValue(rand.Next(10)); // ------------------------------------------ TAX AMOUNT
             item.ItemLineAdd.Cost.SetValue(Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2)); // --- AMOUNT/COST
         }
-
-
     }
 }

@@ -2,41 +2,61 @@ using Enderun.Logic;
 using Interop.QBFC16;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Serilog;
 using System.Configuration;
 using System.Diagnostics;
+using System.Dynamic;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using static Enderun.Models.InterfaceAPIModels;
 
 namespace Enderun
 {
-    public partial class Form1 : Form
+    public partial class Main : Form
     {
         public bool isClose = false;
         private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
         private IConfigurationSection? apiConfig = Program.Configuration.GetSection("ApiConfig");
+        private IConfigurationSection? versions = Program.Configuration.GetSection("CountryVersions");
+        private readonly string logFolder = Program.Configuration.GetSection("LogFolder").Value;
         private JournalEntry journalEntry = new();
         private Bill bills = new();
-        public Form1()
+        private JournalEntryProcess journalEntryProc = new();
+        private BillProcess billsProc = new();
+        public Main()
         {
             InitializeComponent();
         }
 
         private void btnConnectQB_Click(object sender, EventArgs e)
         {
+            if (cmbCountry.SelectedIndex == 0)
+            {
+                MessageBox.Show(systemMessages?.GetSection("A11").Value);
+                return;
+            }
+
             ConnectToQuickbooks();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             this.Text = systemMessages?.GetSection("A1").Value;
-            EnableAllControls(false);
+            EnableAllControls();
             ToolTip tooltip = new ToolTip();
-            tooltip.SetToolTip(btnExecute, "Execute the chosen report");
-            tooltip.SetToolTip(btnDownload, "Download the report");
-            tooltip.SetToolTip(btnCopyPath, "Copy to clipboard");
+            tooltip.SetToolTip(btnExecute, systemMessages?.GetSection("A8").Value);
+            tooltip.SetToolTip(btnDownload, systemMessages?.GetSection("A9").Value);
+            tooltip.SetToolTip(btnCopyPath, systemMessages?.GetSection("A10").Value);
             btnCopyPath.Enabled = false;
+
+            int versionCount = int.Parse(Program.Configuration.GetSection("CountryVersionsCount").Value);
+            for (int q = 1; q <= versionCount; q++)
+                cmbCountry.Items.Add(versions?.GetSection($"{q}").Value);
+            
+            cmbCountry.SelectedIndex = 0;
         }
 
         private void btnClose_Click(object sender, EventArgs e)
@@ -57,19 +77,41 @@ namespace Enderun
 
         private void btnExecute_Click(object sender, EventArgs e)
         {
+            var journalEntriesList = new List<AcctInterfaces>();
+            var billsList = new List<AcctInterfaces>();
+            var region = (string)cmbCountry.SelectedItem;
+
             if (cmbType.SelectedIndex < 0)
             {
                 MessageBox.Show(systemMessages?.GetSection("A5").Value);
                 return;
             }
 
+            using (var httpClient = new HttpClient())
+            {
+                var response = httpClient.GetAsync(apiConfig.GetSection("Url").Value).Result.Content.ReadAsStringAsync().Result;
+
+                JObject jsonObject = JObject.Parse(response);
+                string acctInterfaces = jsonObject["AcctInterfaces"].ToString();
+                var mappedAcctInterface = JsonConvert.DeserializeObject<List<AcctInterfaces>>(acctInterfaces);
+
+                journalEntriesList = mappedAcctInterface.Where(q => q.LineType.Equals("C")).ToList();
+                billsList = mappedAcctInterface.Where(q => q.LineType.Equals("E")).ToList();
+            }
+
             switch (cmbType.SelectedIndex)
             {
                 case 0:
-                    journalEntry.DoAccountAdd();
+                    journalEntry.DoAccountAdd(region);
+                    break;
+                case 1:
+                    bills.DoBillAdd(region);
+                    break;
+                case 2:
+                    journalEntryProc.DoAccountAdd(journalEntriesList, region);
                     break;
                 default:
-                    bills.DoBillAdd();
+                    billsProc.DoBillAdd(billsList, region);
                     break;
             }
         }
@@ -153,6 +195,19 @@ namespace Enderun
         //        txtPath.Text = responseBody;
         //        Log.Error($"API request failed: {responseBody}");
         //    }
+
+
+        //////using (var httpClient = new HttpClient())
+        //////{
+        //////    var response = httpClient.GetAsync(apiConfig.GetSection("Url").Value).Result.Content.ReadAsStringAsync().Result;
+
+        //////    JObject jsonObject = JObject.Parse(response);
+        //////    string acctInterfaces = jsonObject["AcctInterfaces"].ToString();
+        //////    var mappedAcctInterface = JsonConvert.DeserializeObject<List<AcctInterfaces>>(acctInterfaces);
+
+        //////    var journalEntry = mappedAcctInterface.Where(q => q.LineType.Equals("C")).ToList();
+        //////    var bill = mappedAcctInterface.Where(q => q.LineType.Equals("E")).ToList();
+        //////}
         #endregion
 
         private void btnCopyPath_Click(object sender, EventArgs e)
@@ -204,12 +259,22 @@ namespace Enderun
 
         public void EnableAllControls(bool isEnabled = false)
         {
-            cmbType.Enabled = isEnabled;
-            btnCopyPath.Enabled = isEnabled;
-            btnExecute.Enabled = isEnabled;
-            btnDownload.Enabled = isEnabled;
-            txtPath.Enabled = isEnabled;
+            //cmbType.Enabled = isEnabled;
+            //btnCopyPath.Enabled = isEnabled;
+            //btnExecute.Enabled = isEnabled;
+            //btnDownload.Enabled = isEnabled;
+            //txtPath.Enabled = isEnabled;
+            //btnLogs.Enabled = isEnabled;
+            //btnBrowse.Enabled = isEnabled;
+
+            foreach (Control c in this.Controls)
+                c.Enabled = isEnabled;
+
+            btnConnectQB.Enabled = !isEnabled;
+            cmbCountry.Enabled = !isEnabled;
         }
+
+
 
         private void btnDownload_Click(object sender, EventArgs e)
         {
@@ -238,7 +303,7 @@ namespace Enderun
         private void btnLogs_Click(object sender, EventArgs e)
         {
             Log.Information(systemMessages?.GetSection("A7").Value);
-            var filePath = $"{Program.Configuration.GetSection("LogFolder").Value}\\{DateTime.Now.ToString("MM-dd-yyyy")}.log";
+            var filePath = $"{logFolder}\\{DateTime.Now.ToString("MM-dd-yyyy")}.log";
             try
             {
                 if (!File.Exists(filePath))
@@ -270,6 +335,23 @@ namespace Enderun
             {
                 Log.Error($"{err.Message} : {err.StackTrace}");
                 return;
+            }
+        }
+
+        private void btnBrowse_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Excel Files|*.xlsx;*.xls";
+                openFileDialog.Title = "Select an Excel File";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string filePath = openFileDialog.FileName;
+
+                    // Process the selected Excel file
+                    //ProcessExcelFile(filePath);
+                }
             }
         }
     }

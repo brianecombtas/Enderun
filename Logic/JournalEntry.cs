@@ -13,7 +13,7 @@ namespace Enderun
     {
         private IConfigurationSection? systemMessages = Program.Configuration.GetSection("SystemMessages");
         private IConfigurationSection? chartOfAccounts = Program.Configuration.GetSection("ChartOfAccounts");
-        public void DoAccountAdd()
+        public void DoAccountAdd(string region)
         {
             try
             {
@@ -21,14 +21,14 @@ namespace Enderun
                 QBSessionManager sessionManager = new QBSessionManager();
 
                 //Create the message set request object to hold our request
-                IMsgSetRequest requestMsgSet = sessionManager.CreateMsgSetRequest("US", 16, 0);
+                IMsgSetRequest requestMsgSet = sessionManager.CreateMsgSetRequest(region, 16, 0);
                 requestMsgSet.Attributes.OnError = ENRqOnError.roeContinue;
-
-                MapJournalAddRq(requestMsgSet);
 
                 //Connect to QuickBooks and begin a session
                 sessionManager.OpenConnection("", systemMessages?.GetSection("EJ-002").Value);
                 sessionManager.BeginSession("", ENOpenMode.omDontCare);
+                
+                MapJournalAddRq(requestMsgSet, region);
 
                 //Send the request and get the response from QuickBooks
                 IResponse response = sessionManager.DoRequests(requestMsgSet).ResponseList.GetAt(0);
@@ -57,7 +57,7 @@ namespace Enderun
 
         public string[] vendor = { "BABY FIRST", "FLOWER BOY", "MARCAYDA BAKERY", "ALFAMART BUCAL", "MARVINS ROOM" };
 
-        void MapJournalAddRq(IMsgSetRequest requestMsgSet)
+        void MapJournalAddRq(IMsgSetRequest requestMsgSet, string region)
         {
             Random rand = new Random();
             var randomAmount = Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2);
@@ -76,16 +76,21 @@ namespace Enderun
             journalLineDebit.JournalDebitLine.Amount.SetValue(randomAmount);  // ----------------------------------------------------- AMOUNT
             journalLineDebit.JournalDebitLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value); //- CHART OF ACCOUNTS (SETUP IN QUICKBOOKS)
             journalLineDebit.JournalDebitLine.EntityRef.FullName.SetValue(vendor[rand.Next(5)]);
-            journalLineDebit.JournalDebitLine.ClassRef.FullName.SetValue("TestClass1");
             journalLineDebit.JournalDebitLine.Memo.SetValue($"TESTING_NO_{rand.Next(100)}");  
+
+            if (region.Equals("US"))
+                journalLineDebit.JournalDebitLine.ClassRef.FullName.SetValue("TestClass1");
+
 
             //// CREDIT LINE
             IORJournalLine journalLineCredit = journal.ORJournalLineList.Append();
             journalLineCredit.JournalCreditLine.Amount.SetValue(randomAmount); // ----------------------------------------------------- AMOUNT
             journalLineCredit.JournalCreditLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection("6").Value);//- ACCOUNTS PAYABLE
             journalLineCredit.JournalCreditLine.EntityRef.FullName.SetValue(vendor[rand.Next(5)]);
-            journalLineCredit.JournalCreditLine.ClassRef.FullName.SetValue("TestClass1");
             journalLineCredit.JournalCreditLine.Memo.SetValue($"TESTING_NO_{rand.Next(100)}");
+
+            if (region.Equals("US"))
+                journalLineCredit.JournalCreditLine.ClassRef.FullName.SetValue("TestClass1");
 
             journal.IncludeRetElementList.Add("ab");
         }

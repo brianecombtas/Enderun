@@ -30,7 +30,7 @@ namespace Enderun
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
 
             ApplicationConfiguration.Initialize();
-            Application.Run(new Form1());
+            Application.Run(new Main());
         }
     }
 }
