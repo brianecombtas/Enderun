@@ -66,7 +66,7 @@ namespace Enderun
                     #region Header
                     //// HEADER
                     IJournalEntryAdd journal = requestMsgSet.AppendJournalEntryAddRq();
-                    journal.TxnDate.SetValue(entry.ExpenseApprovedDate); // -------------------- TRANSACTION DATE
+                    journal.TxnDate.SetValue(entry.ExpenseApprovedDate ?? DateTime.Now); // -------------------- TRANSACTION DATE
                     journal.RefNumber.SetValue(entry.TasNo); // --------------------------- REFERENCE NUMBER
                     journal.IsAdjustment.SetValue(true); // --------------------------------------- IS ADJUSTMENT (TRUE/FALSE)
                     journal.ExternalGUID.SetValue(System.Guid.NewGuid().ToString("B")); // -------- ID (WE THINK THIS IS ONLY A UNIQUE ID FOR THE REQUEST)
@@ -75,9 +75,9 @@ namespace Enderun
                     #region Debit
                     //// DEBIT LINE
                     IORJournalLine journalLineDebit = journal.ORJournalLineList.Append();
-                    journalLineDebit.JournalDebitLine.Amount.SetValue((double)entry.AmountOrg);  // ----------------------------------------------------- AMOUNT
+                    journalLineDebit.JournalDebitLine.Amount.SetValue(string.IsNullOrEmpty(entry.AmountOrg.ToString()) ? 0 : (double)entry.AmountOrg);  // ----------------------------------------------------- AMOUNT
                     journalLineDebit.JournalDebitLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value); //- CHART OF ACCOUNTS (SETUP IN QUICKBOOKS)
-                    journalLineDebit.JournalDebitLine.EntityRef.FullName.SetValue(vendor[rand.Next(5)]);
+                    journalLineDebit.JournalDebitLine.EntityRef.FullName.SetValue(entry.WorkerCode);
                     journalLineDebit.JournalDebitLine.Memo.SetValue($"{entry.TasNo.ToUpper()}{entry.CustomItemName.ToUpper()}");
 
                     if (region.Equals("US"))
@@ -87,9 +87,9 @@ namespace Enderun
                     #region Credit
                     //// CREDIT LINE
                     IORJournalLine journalLineCredit = journal.ORJournalLineList.Append();
-                    journalLineCredit.JournalCreditLine.Amount.SetValue((double)entry.AmountOrg); // ----------------------------------------------------- AMOUNT
+                    journalLineCredit.JournalCreditLine.Amount.SetValue(string.IsNullOrEmpty(entry.AmountOrg.ToString()) ? 0 : (double)entry.AmountOrg); // ----------------------------------------------------- AMOUNT
                     journalLineCredit.JournalCreditLine.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection("6").Value);//- ACCOUNTS PAYABLE
-                    journalLineCredit.JournalCreditLine.EntityRef.FullName.SetValue(vendor[rand.Next(5)]);
+                    journalLineCredit.JournalCreditLine.EntityRef.FullName.SetValue(entry.WorkerCode);
                     journalLineCredit.JournalCreditLine.Memo.SetValue($"{entry.TasNo.ToUpper()}{entry.CustomItemName.ToUpper()}");
 
                     if (region.Equals("US"))

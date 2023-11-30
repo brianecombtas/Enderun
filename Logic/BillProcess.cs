@@ -71,7 +71,7 @@ namespace Enderun.Logic
                     IBillAdd add = requestMsgSet.AppendBillAddRq();
                     add.ExternalGUID.SetValue(Guid.NewGuid().ToString("B"));
                     add.VendorRef.FullName.SetValue(bills.WorkerCode);  /// -------------- ACCOUNT CODE?
-                    add.TxnDate.SetValue(bills.ExpenseApprovedDate);  /// ------------------------------- TRANSACTION DATE
+                    add.TxnDate.SetValue(bills.ExpenseApprovedDate ?? DateTime.Now);  /// ------------------------------- TRANSACTION DATE
                     add.DueDate.SetValue(DateTime.Today.AddMonths(4)); // -------------------- DUE DATE
                     add.Memo.SetValue($"{bills.TasNo.ToUpper()}{bills.CustomItemName.ToUpper()}"); // -------------------- MEMO (WE THINK THESE ARE REMARKS)
                     #endregion
@@ -79,8 +79,8 @@ namespace Enderun.Logic
                     #region Expenses
                     ////       EXPENSE LINE
                     IExpenseLineAdd line = add.ExpenseLineAddList.Append();
-                    line.AccountRef.FullName.SetValue(bills.LineType.ToUpper()); // ------------ CHART OF ACCOUNTS
-                    line.Amount.SetValue((double)bills.AmountOrg); // --------------------- AMOUNT
+                    line.AccountRef.FullName.SetValue(chartOfAccounts?.GetSection($"{rand.Next(40)}").Value); // ------------ CHART OF ACCOUNTS
+                    line.Amount.SetValue(string.IsNullOrEmpty(bills.AmountOrg.ToString()) ? 0 : (double)bills.AmountOrg); // --------------------- AMOUNT
 
                     if (region.Equals("US"))
                         line.ClassRef.FullName.SetValue("TestClass1"); // ------------------------------------------------------- CLASS TYPE (SETUP IN QUICKBOOKS)
@@ -91,7 +91,7 @@ namespace Enderun.Logic
                     IORItemLineAdd item = add.ORItemLineAddList.Append();
                     item.ItemLineAdd.ItemRef.FullName.SetValue("0002"); // ------------------------------------------ ITEM TYPE (SETUP IN QUICKBOOKS)
                     item.ItemLineAdd.TaxAmount.SetValue(rand.Next(10)); // ------------------------------------------ TAX AMOUNT
-                    item.ItemLineAdd.Cost.SetValue((double)bills.TotalMng); // --- AMOUNT/COST
+                    item.ItemLineAdd.Cost.SetValue(string.IsNullOrEmpty(bills.TotalMng.ToString()) ? 0 : (double)bills.TotalMng); // --- AMOUNT/COST
                     #endregion
 
                 }

@@ -48,35 +48,35 @@ namespace Enderun.Models
         }
         public class AcctInterfaces
         {
-            public int ID { get; set; }
-            public int TRID { get; set; }
-            public int InvoiceID { get; set; }
-            public int FinalID { get; set; }
-            public int CashAdvanceID { get; set; }
-            public int InvoiceAPNo { get; set; }
-            public int InvoiceCount { get; set; }
-            public int Percentage { get; set; }
-            public int ExpenseTypeAssignID { get; set; }
-            public int CompanyID { get; set; }
-            public int Type { get; set; }
-            public int TRProjectID { get; set; }
-            public int ProjectID { get; set; }
-            public int ExpenseAccountID { get; set; }
-            public int LineCount { get; set; }
-            public decimal AmountOrg { get; set; }
-            public decimal TaxOrg { get; set; }
-            public decimal ReductionOrg { get; set; }
-            public decimal TotalOrg { get; set; }
-            public decimal ExchangeRate { get; set; }
-            public decimal AmountUSD { get; set; }
-            public decimal TaxUSD { get; set; }
-            public decimal ReductionUSD { get; set; }
-            public decimal TotalUSD { get; set; }
-            public decimal AmountMng { get; set; }
-            public decimal TaxMng { get; set; }
-            public decimal ReductionMng { get; set; }
-            public decimal TotalMng { get; set; }
-            public decimal AmountReim { get; set; }
+            public string ID { get; set; }
+            public string TRID { get; set; }
+            public string InvoiceID { get; set; }
+            public string FinalID { get; set; }
+            public string CashAdvanceID { get; set; }
+            public string InvoiceAPNo { get; set; }
+            public string InvoiceCount { get; set; }
+            public string Percentage { get; set; }
+            public string ExpenseTypeAssignID { get; set; }
+            public string CompanyID { get; set; }
+            public string Type { get; set; }
+            public string TRProjectID { get; set; }
+            public string ProjectID { get; set; }
+            public string ExpenseAccountID { get; set; }
+            public string LineCount { get; set; }
+            public decimal? AmountOrg { get; set; }
+            public decimal? TaxOrg { get; set; }
+            public decimal? ReductionOrg { get; set; }
+            public decimal? TotalOrg { get; set; }
+            public decimal? ExchangeRate { get; set; }
+            public decimal? AmountUSD { get; set; }
+            public decimal? TaxUSD { get; set; }
+            public decimal? ReductionUSD { get; set; }
+            public decimal? TotalUSD { get; set; }
+            public decimal? AmountMng { get; set; }
+            public decimal? TaxMng { get; set; }
+            public decimal? ReductionMng { get; set; }
+            public decimal? TotalMng { get; set; }
+            public decimal? AmountReim { get; set; }
             public string ProcessID { get; set; }
             public string WorkerCode { get; set; }
             public string LineType { get; set; }
@@ -120,12 +120,12 @@ namespace Enderun.Models
             public string ToCountry { get; set; }
             public string ProjectType { get; set; }
             public string Remark { get; set; }
-            public DateTime DepartureDate { get; set; }
-            public DateTime EndDate { get; set; }
-            public DateTime InvoiceDate { get; set; }
-            public DateTime DueDate { get; set; }
-            public DateTime ExpenseApprovedDate { get; set; }
-            public bool PaidByEmployee { get; set; }
+            public DateTime? DepartureDate { get; set; }
+            public DateTime? EndDate { get; set; }
+            public DateTime? InvoiceDate { get; set; }
+            public DateTime? DueDate { get; set; }
+            public DateTime? ExpenseApprovedDate { get; set; }
+            public bool? PaidByEmployee { get; set; }
 
 
             public AcctInterfaces() { }

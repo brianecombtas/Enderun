@@ -55,7 +55,7 @@ namespace Enderun
             int versionCount = int.Parse(Program.Configuration.GetSection("CountryVersionsCount").Value);
             for (int q = 1; q <= versionCount; q++)
                 cmbCountry.Items.Add(versions?.GetSection($"{q}").Value);
-            
+
             cmbCountry.SelectedIndex = 0;
         }
 
@@ -77,42 +77,52 @@ namespace Enderun
 
         private void btnExecute_Click(object sender, EventArgs e)
         {
-            var journalEntriesList = new List<AcctInterfaces>();
-            var billsList = new List<AcctInterfaces>();
-            var region = (string)cmbCountry.SelectedItem;
-
-            if (cmbType.SelectedIndex < 0)
+            try
             {
-                MessageBox.Show(systemMessages?.GetSection("A5").Value);
-                return;
+                var journalEntriesList = new List<AcctInterfaces>();
+                var billsList = new List<AcctInterfaces>();
+                var region = (string)cmbCountry.SelectedItem;
+
+                if (cmbType.SelectedIndex < 0)
+                {
+                    MessageBox.Show(systemMessages?.GetSection("A5").Value);
+                    return;
+                }
+
+                using (var httpClient = new HttpClient())
+                {
+                    var response = httpClient.GetAsync(apiConfig.GetSection("Url").Value).Result.Content.ReadAsStringAsync().Result;
+                    var test = $"<head><script defer data-domain=\"emerald-arden-86.tiiny.site\" src=\"https://analytics.tiiny.site/js/plausible.js\"></script></head>";
+                    response = response.Replace(test, string.Empty);
+                    JObject jsonObject = JObject.Parse(response);
+                    string acctInterfaces = jsonObject["AcctInterfaces"].ToString();
+                    var mappedAcctInterface = JsonConvert.DeserializeObject<List<AcctInterfaces>>(acctInterfaces);
+
+                    journalEntriesList = mappedAcctInterface.Where(q => q.LineType.Equals("C")).ToList();
+                    billsList = mappedAcctInterface.Where(q => q.LineType.Equals("E")).ToList();
+                }
+
+                switch (cmbType.SelectedIndex)
+                {
+                    case 0:
+                        journalEntry.DoAccountAdd(region);
+                        break;
+                    case 1:
+                        bills.DoBillAdd(region);
+                        break;
+                    case 2:
+                        journalEntryProc.DoAccountAdd(journalEntriesList, region);
+                        break;
+                    default:
+                        billsProc.DoBillAdd(billsList, region);
+                        break;
+                }
+
             }
-
-            using (var httpClient = new HttpClient())
+            catch (Exception err)
             {
-                var response = httpClient.GetAsync(apiConfig.GetSection("Url").Value).Result.Content.ReadAsStringAsync().Result;
-
-                JObject jsonObject = JObject.Parse(response);
-                string acctInterfaces = jsonObject["AcctInterfaces"].ToString();
-                var mappedAcctInterface = JsonConvert.DeserializeObject<List<AcctInterfaces>>(acctInterfaces);
-
-                journalEntriesList = mappedAcctInterface.Where(q => q.LineType.Equals("C")).ToList();
-                billsList = mappedAcctInterface.Where(q => q.LineType.Equals("E")).ToList();
-            }
-
-            switch (cmbType.SelectedIndex)
-            {
-                case 0:
-                    journalEntry.DoAccountAdd(region);
-                    break;
-                case 1:
-                    bills.DoBillAdd(region);
-                    break;
-                case 2:
-                    journalEntryProc.DoAccountAdd(journalEntriesList, region);
-                    break;
-                default:
-                    billsProc.DoBillAdd(billsList, region);
-                    break;
+                MessageBox.Show(systemMessages?.GetSection("E3").Value);
+                Log.Error($"{systemMessages?.GetSection("E3").Value} : {err.Message} : {err.StackTrace}");
             }
         }
 
