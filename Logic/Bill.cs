@@ -79,7 +79,7 @@ namespace Enderun.Logic
 
             ////       ITEM LINE
             IORItemLineAdd item = add.ORItemLineAddList.Append();
-            item.ItemLineAdd.ItemRef.FullName.SetValue("Cement"); // ------------------------------------------ ITEM TYPE (SETUP IN QUICKBOOKS)
+            item.ItemLineAdd.ItemRef.FullName.SetValue($"000{rand.Next(8)}"); // ------------------------------------------ ITEM TYPE (SETUP IN QUICKBOOKS)
             item.ItemLineAdd.TaxAmount.SetValue(rand.Next(10)); // ------------------------------------------ TAX AMOUNT
             item.ItemLineAdd.Cost.SetValue(Math.Round(Convert.ToDouble(rand.Next(100) * Math.PI), 2)); // --- AMOUNT/COST
         }
